@@ -10,7 +10,7 @@
  * Design ID:                                          WWVBV2
  * Includes Pre/Post Download Control Register Writes: Yes
  * Created By:                                         ClockBuilder Pro v4.12 [2024-01-19]
- * Timestamp:                                          2024-04-30 18:57:54 GMT-07:00
+ * Timestamp:                                          2024-08-14 15:10:09 GMT-07:00
  *
  * A complete design report corresponding to this export is included at the end 
  * of this header file.
@@ -196,10 +196,10 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
 	{ 0x0256, 0x04 },
 	{ 0x0257, 0x00 },
 	{ 0x0258, 0x00 },
-	{ 0x0259, 0x04 },
+	{ 0x0259, 0x0F },
 	{ 0x025A, 0x00 },
 	{ 0x025B, 0x00 },
-	{ 0x025C, 0x04 },
+	{ 0x025C, 0x0F },
 	{ 0x025D, 0x00 },
 	{ 0x025E, 0x00 },
 	{ 0x025F, 0xFF },
@@ -452,7 +452,7 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  * Project File:       C:\Users\julianstj\Desktop\WorkNotes\Projects\PTP\WWVB_SDR\Software\RCB_WWVB\PLL_Config\Si5341-RevD-WWVBV2-Project.slabtimeproj
  * Design ID:          WWVBV2
  * Created By:         ClockBuilder Pro v4.12 [2024-01-19]
- * Timestamp:          2024-04-30 18:57:54 GMT-07:00
+ * Timestamp:          2024-08-14 15:10:09 GMT-07:00
  * 
  * Design Rule Check
  * =================
@@ -518,9 +518,9 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  *    OUT3: Unused
  *    OUT4: 32 MHz
  *          Enabled, LVCMOS In-Phase 1.8 V 31 ?
- *    OUT5: 32 MHz
+ *    OUT5: 10 MHz
  *          Enabled, LVCMOS In-Phase 3.3 V 22 ?
- *    OUT6: 32 MHz
+ *    OUT6: 10 MHz
  *          Enabled, LVCMOS In-Phase 3.3 V 22 ?
  *    OUT7: 100 Hz
  *          Enabled, LVCMOS In-Phase 3.3 V 22 ?
@@ -565,8 +565,8 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  *       OUT1: 10 MHz
  *       OUT2: 10 MHz
  *       OUT4: 32 MHz
- *       OUT5: 32 MHz
- *       OUT6: 32 MHz
+ *       OUT5: 10 MHz
+ *       OUT6: 10 MHz
  *       OUT7: 100 Hz
  *       OUT8: 100 Hz
  *       OUT9: 10 MHz
@@ -585,8 +585,8 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  *    R2 = 32
  *    R3 = Unused
  *    R4 = 10
- *    R5 = 10
- *    R6 = 10
+ *    R5 = 32
+ *    R6 = 32
  *    R7 = 3200000
  *    R8 = 3200000
  *    R9 = 32
@@ -618,7 +618,7 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  *                               Overall  On Chip
  * Condition                     Power    Power    Ta    Tj
  * ----------------------------  -------  -------  ----  ----
- * Typical Ta, Voltage, Current  948 mW   948 mW   25 C  42 C
+ * Typical Ta, Voltage, Current  940 mW   940 mW   25 C  42 C
  * 
  *                                   -----------------------
  *                                           Typical        
@@ -633,16 +633,16 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  * VDDO2  OUT2       10 MHz  LVCMOS (in-phase)     3.30       14     45
  * VDDO3  OUT3       Unused        
  * VDDO4  OUT4       32 MHz  LVCMOS (in-phase)     1.80       14     25
- * VDDO5  OUT5       32 MHz  LVCMOS (in-phase)     3.30       15     49
- * VDDO6  OUT6       32 MHz  LVCMOS (in-phase)     3.30       15     49
+ * VDDO5  OUT5       10 MHz  LVCMOS (in-phase)     3.30       14     45
+ * VDDO6  OUT6       10 MHz  LVCMOS (in-phase)     3.30       14     45
  * VDDO7  OUT7       100 Hz  LVCMOS (in-phase)     3.30       13     43
  * VDDO8  OUT8       100 Hz  LVCMOS (in-phase)     3.30       13     43
  * VDDO9  OUT9       10 MHz  LVCMOS (in-phase)     3.30       14     45
  *                                   -------  -------  -----
  *                                      1.80      141    253
- *                                      3.30      210    694
+ *                                      3.30      208    686
  *                                   -------  -------  -----
- *                                     Total             948
+ *                                     Total             940
  *                                   -------  -------  -----
  * 
  * Note:
@@ -848,8 +848,8 @@ si5341_revd_register_t const si5341_revd_registers[SI5341_REVD_REG_CONFIG_NUM_RE
  * 0x0250[23:0]  R2_REG               15                 0x00000F         
  * 0x0253[23:0]  R3_REG               0                  0x000000         
  * 0x0256[23:0]  R4_REG               4                  0x000004         
- * 0x0259[23:0]  R5_REG               4                  0x000004         
- * 0x025C[23:0]  R6_REG               4                  0x000004         
+ * 0x0259[23:0]  R5_REG               15                 0x00000F         
+ * 0x025C[23:0]  R6_REG               15                 0x00000F         
  * 0x025F[23:0]  R7_REG               1599999            0x1869FF         
  * 0x0262[23:0]  R8_REG               1599999            0x1869FF         
  * 0x0268[23:0]  R9_REG               15                 0x00000F         

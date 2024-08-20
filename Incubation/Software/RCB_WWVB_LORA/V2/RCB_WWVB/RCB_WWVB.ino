@@ -9,7 +9,7 @@
 #include "SX1257.h"
 #include "stm32_sdr.h"
 #include "ICE40.h"
-
+#include "stm32_pps.h"
 
 //#include "mbed.h"
 
@@ -126,6 +126,8 @@ void processSingleCharCommand(char command) {
   float snr = 0;
   int packetSize;
   uint8_t pktbuf[40];
+  static int64_t adjust_val = 1;
+  static int64_t adjust_val_accum = 0;
   phaseUnion dummyVal;
   switch (command) {
     case '0':
@@ -162,16 +164,8 @@ void processSingleCharCommand(char command) {
       frequency_offset -= 0.01; // 10 mHz
       apply_freq_change(0);
       break;
-    case 'd':// incremental frequency down
-      frequency_offset -= 1; // 1Hz
-      apply_freq_change(0);
-      break;
     case 'C': // next frequency down
       frequency_offset -= 100; // 100Hz
-      apply_freq_change(0);
-      break;
-    case 'D': // next frequency down
-      frequency_offset -= 1000; // 1KHz
       apply_freq_change(0);
       break;
 
@@ -310,6 +304,35 @@ void processSingleCharCommand(char command) {
       SX1257_SDR.set_tx_mode(0,0);
       SX1257_SDR.set_antenna(0); // setup SDR for RX
       break;
+    case 'p':
+      Serial.println("Enabling HRTIMER PPS output!");
+      init_stm_pps();
+      break;
+    case '+':
+    case '=':
+      adjust_val *= 2;
+      sprintf(print_buffer, "Doubling adjustment value to %"PRId64"\r\n", adjust_val);
+      Serial.print(print_buffer);
+      break;
+    case '-':
+    case '_':
+      adjust_val /= 2;
+      if ( adjust_val == 0 ) adjust_val = 1;
+      sprintf(print_buffer, "Halving adjustment value to %"PRId64"\r\n", adjust_val);
+      Serial.print(print_buffer);
+      break;
+    case 'L':
+    case 'd':
+    case 'D':
+      break;
+    case 'l':
+    case 'a':
+    case 'A':
+      break;
+    case 'M':
+      break;
+    case 'm':
+      break;
     case '&':
       Serial.print("User command, restarting STM32!\r\n");
       delay(200);
@@ -352,6 +375,9 @@ void processSingleCharCommand(char command) {
       delay(2000);
       break;
     // Add more cases as needed
+    case 'f':
+      ice40_test();
+      break;
     default:
       Serial.println("Unknown command");
       break;
@@ -458,7 +484,19 @@ void setup() {
   __HAL_RCC_D2SRAM2_CLK_ENABLE();
   __HAL_RCC_C1_D2SRAM2_CLK_ENABLE();
 
+  __HAL_RCC_D2SRAM3_CLK_ENABLE();
+  __HAL_RCC_C1_D2SRAM3_CLK_ENABLE();
+
   __HAL_RCC_RNG_CLK_ENABLE(); // enable hardware RNG
+
+  __HAL_RCC_HRTIM1_CLK_ENABLE();
+  __HAL_RCC_C1_HRTIM1_CLK_ENABLE();
+  __HAL_RCC_C2_HRTIM1_CLK_ENABLE();
+
+
+  __HAL_RCC_TIM1_CLK_ENABLE();
+  __HAL_RCC_C1_TIM1_CLK_ENABLE();
+  __HAL_RCC_C2_TIM1_CLK_ENABLE();
 
   wwvb_gpio_pinmode(WLED_RED, OUTPUT);
   wwvb_gpio_pinmode(WLED_GREEN, OUTPUT);
@@ -547,9 +585,6 @@ void setup() {
 
   wwvb_gpio_pinmode(ICE_SPARE5, OUTPUT);
   wwvb_digital_write(ICE_SPARE5, 0); // disable FPGA stream by default
-
-  wwvb_gpio_pinmode(ICE_SPARE3, OUTPUT);
-  wwvb_digital_write(ICE_SPARE3, 0); // FPGA state reset
 
   release_ice40_reset(); // release ice40 reset so I can access SX1257
 
@@ -716,6 +751,8 @@ void loop() {
   led_loop();
   handle_user_data();
   wiwi_run();
+
+  loop_stm_pps();
 
 
   
